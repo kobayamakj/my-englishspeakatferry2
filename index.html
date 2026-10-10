@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FerryTalk - 日韓国際フェリーインバウンド英語学習</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for cute icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Poppins & M PLUS Rounded 1c -->
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        skyBlue: '#E0F2FE',
+                        deepBlue: '#0284C7',
+                        oceanBlue: '#38BDF8',
+                        softWhite: '#F8FAFC',
+                        accentPink: '#FB7185',
+                        sunnyYellow: '#FACC15',
+                        mintGreen: '#34D399'
+                    },
+                    fontFamily: {
+                        rounded: ['"M PLUS Rounded 1c"', 'sans-serif'],
+                        poppins: ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 50%, #7DD3FC 100%);
+            min-height: 100vh;
+            color: #1E293B;
+            touch-action: manipulation;
+        }
+        /* Wave animation */
+        .wave-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+            z-index: -1;
+            opacity: 0.6;
+        }
+        .wave-container svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 80px;
+        }
+        /* Cute floating ship animation */
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(-2deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        .ship-float {
+            animation: float 4s ease-in-out infinite;
+        }
+        /* Pulse wave recording animation */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.25); opacity: 0.4; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        .recording-pulse {
+            animation: pulse-ring 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #38BDF8;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-between min-h-screen relative pb-12">
+
+    <div class="wave-container">
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M0,0 C150,90 350,-40 500,50 C650,140 900,10 1200,40 L1200,120 L0,120 Z" fill="#38BDF8"></path>
+        </svg>
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="w-full max-w-md px-4 pt-6 pb-2 flex items-center justify-between z-10">
+        <div class="flex items-center space-x-2">
+            <div class="bg-white p-2 rounded-2xl shadow-md text-deepBlue ship-float">
+                <i class="fa-solid fa-ship text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="font-poppins font-bold text-xl text-deepBlue tracking-wide">FerryTalk</h1>
+                <p class="text-xs text-slate-600 font-bold">日韓国際フェリー 英語スピーキング</p>
+            </div>
+        </div>
+        <div class="flex space-x-2">
+            <button onclick="switchTab('manage')" id="btn-tab-manage" class="bg-white/85 hover:bg-white text-deepBlue px-3 py-2 rounded-xl text-xs font-bold shadow-sm transition flex items-center space-x-1 border border-sky-200">
+                <i class="fa-solid fa-book-bookmark"></i>
+                <span>フレーズ管理</span>
+            </button>
+            <button onclick="switchTab('home')" id="btn-tab-home" class="hidden bg-deepBlue text-white px-3 py-2 rounded-xl text-xs font-bold shadow-md transition flex items-center space-x-1">
+                <i class="fa-solid fa-house"></i>
+                <span>ホーム</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="w-full max-w-md px-4 flex-1 flex flex-col justify-center items-center z-10 my-2">
+
+        <div id="view-home" class="w-full flex flex-col items-center space-y-5">
+            <!-- Hero Card -->
+            <div class="w-full bg-white/90 backdrop-blur-md rounded-3xl p-6 shadow-xl border border-white flex flex-col items-center text-center relative overflow-hidden">
+                <div class="absolute -right-8 -top-8 text-sky-100 text-9xl z-0 pointer-events-none">
+                    <i class="fa-solid fa-water"></i>
+                </div>
+                <div class="relative z-10">
+                    <span class="bg-sky-100 text-deepBlue text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">インバウンド接客</span>
+                    <h2 class="text-2xl font-extrabold text-slate-700 mt-2">音声で鍛える英語力</h2>
+                    <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                        フェリー船内やおもてなしで使えるフレーズを音声認識でトレーニング！15問テストに挑戦しよう。
+                    </p>
+                    
+                    <div class="mt-6 flex flex-col w-full space-y-3">
+                        <button onclick="startQuiz()" class="w-full bg-gradient-to-r from-deepBlue to-oceanBlue hover:opacity-95 text-white font-bold py-3.5 px-6 rounded-2xl shadow-lg transition transform active:scale-95 flex items-center justify-center space-x-2 text-base">
+                            <i class="fa-solid fa-play text-sunnyYellow"></i>
+                            <span>15問チャレンジスタート！</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Quick View -->
+            <div class="w-full bg-white/80 backdrop-blur-md rounded-3xl p-5 shadow-lg border border-white">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-bold text-sm text-slate-700 flex items-center space-x-2">
+                        <i class="fa-solid fa-layer-group text-deepBlue"></i>
+                        <span>学習カテゴリ一覧</span>
+                    </h3>
+                    <span id="total-phrases-count" class="text-xs font-bold bg-sky-100 text-deepBlue px-2 py-0.5 rounded-full">0フレーズ</span>
+                </div>
+                <div id="home-category-list" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <div id="view-quiz" class="w-full hidden flex-col items-center space-y-4">
+            <!-- Quiz Progress & Score Header -->
+            <div class="w-full bg-white/90 backdrop-blur-md rounded-2xl p-4 shadow-md flex items-center justify-between border border-white">
+                <div class="flex items-center space-x-2">
+                    <span class="bg-deepBlue text-white text-xs font-bold px-2.5 py-1 rounded-lg" id="quiz-progress-badge">第 1 / 15 問</span>
+                    <span class="text-xs font-bold text-slate-500 bg-sky-50 px-2 py-1 rounded-lg" id="quiz-category-badge">カテゴリ</span>
+                </div>
+                <div class="flex items-center space-x-1 text-deepBlue font-bold text-sm">
+                    <i class="fa-solid fa-star text-sunnyYellow"></i>
+                    <span id="quiz-current-score">スコア: 0pt</span>
+                </div>
+            </div>
+
+            <!-- Quiz Card -->
+            <div class="w-full bg-white/95 backdrop-blur-md rounded-3xl p-6 shadow-xl border border-white flex flex-col items-center text-center relative">
+                <!-- Attempt indicator -->
+                <div id="attempt-badge" class="absolute top-4 right-4 bg-amber-100 text-amber-700 text-xs font-bold px-2.5 py-1 rounded-full hidden">
+                    残り1回リトライ可能
+                </div>
+
+                <p class="text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">Japanese Translation</p>
+                <h3 id="quiz-jp-text" class="text-lg font-extrabold text-slate-700 mb-6">乗船券とパスポートをご提示ください。</h3>
+
+                <div class="w-full bg-sky-50/70 rounded-2xl p-4 mb-6 border border-sky-100 relative">
+                    <p class="text-xs text-sky-600 font-bold uppercase tracking-wider mb-1">Target English Phrase</p>
+                    <p id="quiz-en-text" class="text-xl font-bold text-slate-800 font-poppins select-all">Please show your boarding pass and passport.</p>
+                    
+                    <!-- Native Audio Button -->
+                    <button onclick="playNativeAudio()" class="absolute -bottom-4 right-4 bg-white hover:bg-sky-50 text-deepBlue p-3 rounded-full shadow-md transition border border-sky-200 flex items-center justify-center" title="ネイティブ発音を聴く">
+                        <i class="fa-solid fa-volume-high text-base"></i>
+                    </button>
+                </div>
+
+                <!-- Speech Recognition Feedback Area -->
+                <div id="feedback-box" class="w-full p-3 rounded-xl mb-6 bg-slate-50 text-slate-600 text-xs font-medium border border-slate-200 transition">
+                    マイクボタンを押して、英語で発音してください。
+                </div>
+
+                <!-- Controls -->
+                <div class="flex items-center justify-center space-x-4 w-full">
+                    <button id="btn-mic" onclick="toggleSpeechRecognition()" class="w-20 h-20 bg-gradient-to-tr from-deepBlue to-oceanBlue hover:opacity-95 text-white rounded-full shadow-xl flex items-center justify-center text-2xl transition transform active:scale-95 focus:outline-none">
+                        <i id="mic-icon" class="fa-solid fa-microphone"></i>
+                    </button>
+                </div>
+                <p id="mic-status-text" class="text-xs text-slate-400 mt-2 font-bold">タップして発音開始</p>
+            </div>
+
+            <!-- Quit Button -->
+            <button onclick="confirmQuitQuiz()" class="text-xs text-slate-500 hover:text-slate-700 font-bold py-1 px-4">
+                <i class="fa-solid fa-arrow-left mr-1"></i>途中でやめる
+            </button>
+        </div>
+
+        <div id="view-result" class="w-full hidden flex-col items-center space-y-4">
+            <div class="w-full bg-white/95 backdrop-blur-md rounded-3xl p-6 shadow-xl border border-white flex flex-col items-center text-center">
+                <div class="w-20 h-20 bg-sky-100 text-deepBlue rounded-full flex items-center justify-center text-3xl mb-3 shadow-inner ship-float">
+                    <i class="fa-solid fa-trophy text-sunnyYellow"></i>
+                </div>
+                <h2 class="text-2xl font-extrabold text-slate-700">お疲れ様でした！</h2>
+                <p class="text-xs text-slate-500 mt-1">15問のチャレンジが完了しました。</p>
+
+                <!-- Score Display -->
+                <div class="my-6 bg-gradient-to-r from-sky-50 to-blue-50 w-full rounded-2xl p-6 border border-sky-100 flex flex-col items-center">
+                    <span class="text-xs font-bold text-sky-600 uppercase tracking-wider">獲得スコア</span>
+                    <div class="flex items-baseline space-x-1 mt-1">
+                        <span id="result-score-val" class="text-5xl font-extrabold text-deepBlue font-poppins">28</span>
+                        <span class="text-lg font-bold text-slate-400">/ 30点</span>
+                    </div>
+                    <p id="result-comment" class="text-xs text-slate-600 font-bold mt-2 bg-white px-3 py-1 rounded-full shadow-sm">素晴らしい乗務員英語力です！</p>
+                </div>
+
+                <div class="flex flex-col w-full space-y-2">
+                    <button onclick="startQuiz()" class="w-full bg-deepBlue hover:opacity-95 text-white font-bold py-3 rounded-2xl shadow-md transition text-sm">
+                        もう一度チャレンジする
+                    </button>
+                    <button onclick="switchTab('home')" class="w-full bg-sky-100 hover:bg-sky-200 text-deepBlue font-bold py-3 rounded-2xl transition text-sm">
+                        ホームに戻る
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-manage" class="w-full hidden flex-col items-center space-y-4">
+            <div class="w-full bg-white/90 backdrop-blur-md rounded-3xl p-5 shadow-xl border border-white">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="font-bold text-base text-slate-700 flex items-center space-x-2">
+                        <i class="fa-solid fa-folder-open text-deepBlue"></i>
+                        <span>フレーズ管理・登録</span>
+                    </h2>
+                    <button onclick="openAddModal()" class="bg-deepBlue hover:opacity-95 text-white text-xs font-bold px-3 py-2 rounded-xl shadow-sm transition flex items-center space-x-1">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>追加</span>
+                    </button>
+                </div>
+
+                <!-- Category filter selector -->
+                <div class="mb-3">
+                    <label class="block text-xs font-bold text-slate-500 mb-1">カテゴリフィルター</label>
+                    <select id="manage-category-filter" onchange="renderManagePhrases()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-deepBlue">
+                        <option value="all">すべて表示</option>
+                    </select>
+                </div>
+
+                <!-- Phrases List -->
+                <div id="manage-phrases-list" class="space-y-2 max-h-72 overflow-y-auto pr-1">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="phrase-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl border border-sky-100 transform transition-all">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modal-title" class="font-bold text-base text-slate-700">新規フレーズ登録</h3>
+                <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <form id="phrase-form" onsubmit="savePhrase(event)" class="space-y-3">
+                <input type="hidden" id="phrase-id" value="">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">カテゴリ名</label>
+                    <input type="text" id="phrase-category" list="category-suggestions" required placeholder="例: チケットカウンター" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-deepBlue">
+                    <datalist id="category-suggestions">
+                        <!-- Filled by JS -->
+                    </datalist>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">英語フレーズ (English)</label>
+                    <textarea id="phrase-en" required rows="2" placeholder="Please show your ticket." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 focus:outline-none focus:border-deepBlue font-poppins"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">日本語訳 (Japanese)</label>
+                    <textarea id="phrase-jp" required rows="2" placeholder="チケットをご提示ください。" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 focus:outline-none focus:border-deepBlue"></textarea>
+                </div>
+                <div class="pt-2 flex space-x-2">
+                    <button type="button" onclick="closeAddModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2.5 rounded-xl text-xs transition">
+                        キャンセル
+                    </button>
+                    <button type="submit" class="flex-1 bg-deepBlue hover:opacity-95 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition">
+                        保存する
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="message-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl border border-sky-100 text-center">
+            <div id="message-icon-container" class="w-14 h-14 bg-sky-100 text-deepBlue rounded-full flex items-center justify-center text-2xl mx-auto mb-3 shadow-inner">
+                <i id="message-icon" class="fa-solid fa-circle-info"></i>
+            </div>
+            <h3 id="message-title" class="font-bold text-base text-slate-700 mb-1">お知らせ</h3>
+            <p id="message-text" class="text-xs text-slate-500 mb-5 leading-relaxed">メッセージ内容</p>
+            <button onclick="closeMessageBox()" class="w-full bg-deepBlue text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition">
+                OK
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Default Preloaded Ferry Phrases for Inbound Customers
+        const defaultPhrases = [
+            // チケットカウンター
+            { id: 'def-1', category: 'チケットカウンター', en: 'Please show your passport and booking confirmation.', jp: 'パスポートと予約確認書をご提示ください。' },
+            { id: 'def-2', category: 'チケットカウンター', en: 'Which class would you like, Economy or First Class?', jp: 'エコノミークラスとファーストクラス、どちらになさいますか？' },
+            { id: 'def-3', category: 'チケットカウンター', en: 'Please fill out this embarkation card.', jp: 'こちらの乗船カードにご記入をお願いいたします。' },
+            { id: 'def-4', category: 'チケットカウンター', en: 'Baggage allowance is up to twenty kilograms per person.', jp: 'お荷物は、お一人様20キロまで無料です。' },
+
+            // 乗船・下船
+            { id: 'def-5', category: '乗船・下船', en: 'Boarding will start at three oclock at Gate Two.', jp: 'ご乗船は15時より2番ゲートにて開始いたします。' },
+            { id: 'def-6', category: '乗船・下船', en: 'Please have your boarding pass ready for inspection.', jp: '改札のため乗船券をご用意ください。' },
+            { id: 'def-7', category: '乗船・下船', en: 'Watch your step when stepping onto the ship.', jp: 'ご乗船の際は足元にご注意ください。' },
+            { id: 'def-8', category: '乗船・下船', en: 'Welcome aboard the ferry to Busan!', jp: '釜山行きのフェリーへようこそ！' },
+
+            // 船内施設
+            { id: 'def-9', category: '船内施設', en: 'The restaurant is located on the fourth deck.', jp: 'レストランは4階デッキにございます。' },
+            { id: 'def-10', category: '船内施設', en: 'Free Wi-Fi is available throughout the vessel.', jp: '船内全域で無料Wi-Fiをご利用いただけます。' },
+            { id: 'def-11', category: '船内施設', en: 'Public baths and restrooms are down this hallway.', jp: '大浴場と化粧室はこの廊下の先にございます。' },
+            { id: 'def-12', category: '船内施設', en: 'Life jackets are stored under your bed.', jp: '救命胴衣はベッドの下に収納されております。' },
+
+            // 免税店・売店
+            { id: 'def-13', category: '免税店・売店', en: 'The duty-free shop opens after departure.', jp: '免税店は出港後に営業を開始いたします。' },
+            { id: 'def-14', category: '免税店・売店', en: 'We accept both Japanese yen and Korean won.', jp: '日本円と韓国ウォンの両方をご利用いただけます。' },
+            { id: 'def-15', category: '免税店・売店', en: 'Are you looking for anything in particular?', jp:お探しの商品はございますか？ },
+
+            // トラブル・案内
+            { id: 'def-16', category: 'トラブル・案内', en: 'If you feel seasick, please ask the crew for medicine.', jp: '船酔いされた場合は、乗組員までお薬をお申し付けください。' },
+            { id: 'def-17', category: 'トラブル・案内', en: 'Please keep your valuables with you at all times.', jp: '貴重品は常にお手元にお持ちください。' },
+            { id: 'def-18', category: 'トラブル・案内', en: 'We will arrive at the port on schedule.', jp: '定刻通りに入港する予定です。' }
+        ];
+
+        // App State Variables
+        let phrases = [];
+        let currentQuizList = [];
+        let currentQuizIndex = 0;
+        let currentScore = 0;
+        let currentAttempts = 0; // 0: 1st attempt, 1: 2nd attempt
+        
+        let recognition = null;
+        let isRecording = false;
+
+        // Initialize App on Window Load
+        window.onload = function() {
+            loadPhrasesFromStorage();
+            initSpeechRecognition();
+            updateHomeStats();
+        };
+
+        // LocalStorage Management
+        function loadPhrasesFromStorage() {
+            const stored = localStorage.getItem('kuniferry_phrases');
+            if (stored) {
+                try {
+                    phrases = JSON.parse(stored);
+                } catch(e) {
+                    phrases = [...defaultPhrases];
+                }
+            } else {
+                phrases = [...defaultPhrases];
+                savePhrasesToStorage();
+            }
+        }
+
+        function savePhrasesToStorage() {
+            localStorage.setItem('kuniferry_phrases', JSON.stringify(phrases));
+            updateHomeStats();
+        }
+
+        // Navigation and View Management
+        function switchTab(tab) {
+            const homeView = document.getElementById('view-home');
+            const quizView = document.getElementById('view-quiz');
+            const resultView = document.getElementById('view-result');
+            const manageView = document.getElementById('view-manage');
+            
+            const btnManage = document.getElementById('btn-tab-manage');
+            const btnHome = document.getElementById('btn-tab-home');
+
+            // Hide all views
+            homeView.classList.add('hidden');
+            quizView.classList.add('hidden');
+            resultView.classList.add('hidden');
+            manageView.classList.add('hidden');
+
+            if (tab === 'home') {
+                homeView.classList.remove('hidden');
+                btnManage.classList.remove('hidden');
+                btnHome.classList.add('hidden');
+                updateHomeStats();
+            } else if (tab === 'manage') {
+                manageView.classList.remove('hidden');
+                btnManage.classList.add('hidden');
+                btnHome.classList.remove('hidden');
+                renderManagePhrases();
+                updateCategorySuggestions();
+            } else if (tab === 'quiz') {
+                quizView.classList.remove('hidden');
+                btnManage.classList.add('hidden');
+                btnHome.classList.remove('hidden');
+            } else if (tab === 'result') {
+                resultView.classList.remove('hidden');
+                btnManage.classList.add('hidden');
+                btnHome.classList.remove('hidden');
+            }
+        }
+
+        function updateHomeStats() {
+            document.getElementById('total-phrases-count').innerText = `${phrases.length}フレーズ`;
+            
+            // Group by category
+            const categories = {};
+            phrases.forEach(p => {
+                categories[p.category] = (categories[p.category] || 0) + 1;
+            });
+
+            const listEl = document.getElementById('home-category-list');
+            listEl.innerHTML = '';
+            
+            for (const [cat, count] of Object.entries(categories)) {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center bg-sky-50/60 p-2.5 rounded-xl border border-sky-100 text-xs font-bold text-slate-700';
+                div.innerHTML = `
+                    <span class="flex items-center space-x-2"><i class="fa-solid fa-bookmark text-deepBlue"></i><span>${cat}</span></span>
+                    <span class="bg-white px-2 py-0.5 rounded-lg text-deepBlue shadow-sm">${count}件</span>
+                `;
+                listEl.appendChild(div);
+            }
+        }
+
+        // Quiz Logic
+        function startQuiz() {
+            if (phrases.length === 0) {
+                showCustomMessage('フレーズが登録されていません。まずはフレーズを追加してください。', '警告');
+                return;
+            }
+
+            // Shuffle and pick up to 15 questions
+            const shuffled = [...phrases].sort(() => 0.5 - Math.random());
+            currentQuizList = shuffled.slice(0, 15);
+            currentQuizIndex = 0;
+            currentScore = 0;
+
+            switchTab('quiz');
+            loadQuizQuestion();
+        }
+
+        function loadQuizQuestion() {
+            if (currentQuizIndex >= currentQuizList.length) {
+                finishQuiz();
+                return;
+            }
+
+            const q = currentQuizList[currentQuizIndex];
+            currentAttempts = 0;
+
+            document.getElementById('quiz-progress-badge').innerText = `第 ${currentQuizIndex + 1} / ${currentQuizList.length} 問`;
+            document.getElementById('quiz-category-badge').innerText = q.category;
+            document.getElementById('quiz-current-score').innerText = `スコア: ${currentScore}pt`;
+            document.getElementById('quiz-jp-text').innerText = q.jp;
+            document.getElementById('quiz-en-text').innerText = q.en;
+            
+            const feedbackBox = document.getElementById('feedback-box');
+            feedbackBox.className = 'w-full p-3 rounded-xl mb-6 bg-slate-50 text-slate-600 text-xs font-medium border border-slate-200 transition';
+            feedbackBox.innerHTML = 'マイクボタンを押して、英語で発音してください。';
+
+            document.getElementById('attempt-badge').classList.add('hidden');
+            
+            // Reset mic button
+            const micBtn = document.getElementById('btn-mic');
+            micBtn.className = 'w-20 h-20 bg-gradient-to-tr from-deepBlue to-oceanBlue hover:opacity-95 text-white rounded-full shadow-xl flex items-center justify-center text-2xl transition transform active:scale-95 focus:outline-none';
+            document.getElementById('mic-icon').className = 'fa-solid fa-microphone';
+            document.getElementById('mic-status-text').innerText = 'タップして発音開始';
+            isRecording = false;
+        }
+
+        // Web Speech Recognition setup
+        function initSpeechRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                console.warn('SpeechRecognition API not supported in this browser.');
+                return;
+            }
+
+            recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.onstart = function() {
+                isRecording = true;
+                const micBtn = document.getElementById('btn-mic');
+                micBtn.className = 'w-20 h-20 bg-gradient-to-tr from-accentPink to-pink-500 text-white rounded-full shadow-xl flex items-center justify-center text-2xl recording-pulse focus:outline-none';
+                document.getElementById('mic-icon').className = 'fa-solid fa-microphone-lines';
+                document.getElementById('mic-status-text').innerText = '音声認識中... 話してください';
+            };
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                verifyPronunciation(transcript);
+            };
+
+            recognition.onerror = function(event) {
+                console.warn('Speech recognition error:', event.error);
+                stopRecognitionUI();
+                const feedbackBox = document.getElementById('feedback-box');
+                feedbackBox.className = 'w-full p-3 rounded-xl mb-6 bg-amber-50 text-amber-700 text-xs font-bold border border-amber-200 transition';
+                feedbackBox.innerHTML = '音声がうまく認識できませんでした。もう一度マイクボタンを押してください。';
+            };
+
+            recognition.onend = function() {
+                stopRecognitionUI();
+            };
+        }
+
+        function toggleSpeechRecognition() {
+            if (!recognition) {
+                showCustomMessage('お使いのブラウザは音声認識をサポートしていません。ChromeまたはSafariをご利用ください。', '非対応ブラウザ');
+                // Simulate correct for testing if speech API unavailable
+                simulateCorrect();
+                return;
+            }
+
+            if (isRecording) {
+                recognition.stop();
+            } else {
+                try {
+                    recognition.start();
+                } catch(e) {
+                    recognition.stop();
+                }
+            }
+        }
+
+        function stopRecognitionUI() {
+            isRecording = false;
+            const micBtn = document.getElementById('btn-mic');
+            micBtn.className = 'w-20 h-20 bg-gradient-to-tr from-deepBlue to-oceanBlue hover:opacity-95 text-white rounded-full shadow-xl flex items-center justify-center text-2xl transition transform active:scale-95 focus:outline-none';
+            document.getElementById('mic-icon').className = 'fa-solid fa-microphone';
+            document.getElementById('mic-status-text').innerText = 'タップして発音開始';
+        }
+
+        // Compare target string and transcript (ignoring case and punctuation)
+        function cleanString(str) {
+            return str.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, "").replace(/\s{2,}/g, " ").trim();
+        }
+
+        function verifyPronunciation(transcript) {
+            const q = currentQuizList[currentQuizIndex];
+            const cleanTarget = cleanString(q.en);
+            const cleanUser = cleanString(transcript);
+
+            const feedbackBox = document.getElementById('feedback-box');
+            
+            // Simple similarity or direct inclusion check
+            const isMatch = cleanUser === cleanTarget || cleanTarget.includes(cleanUser) || cleanUser.includes(cleanTarget) || calculateWordMatchRatio(cleanTarget, cleanUser) >= 0.6;
+
+            if (isMatch) {
+                // Correct!
+                speakTTS("PERFECT!");
+                feedbackBox.className = 'w-full p-3 rounded-xl mb-6 bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200 transition';
+                feedbackBox.innerHTML = `PERFECT! 🎉 (認識: "${transcript}")`;
+
+                // Scoring: 1st attempt = 2pts, 2nd attempt = 1pt
+                const earned = currentAttempts === 0 ? 2 : 1;
+                currentScore += earned;
+
+                document.getElementById('quiz-current-score').innerText = `スコア: ${currentScore}pt`;
+
+                // Proceed to next question after 1.5 seconds
+                setTimeout(() => {
+                    currentQuizIndex++;
+                    loadQuizQuestion();
+                }, 1600);
+
+            } else {
+                // Incorrect
+                currentAttempts++;
+                if (currentAttempts === 1) {
+                    // Try again!
+                    speakTTS("Try again!");
+                    feedbackBox.className = 'w-full p-3 rounded-xl mb-6 bg-rose-50 text-rose-600 text-xs font-bold border border-rose-200 transition';
+                    feedbackBox.innerHTML = `もう一回！ (認識: "${transcript}")<br>ネイティブ発音を聴いてもう一度挑戦しましょう！`;
+                    
+                    document.getElementById('attempt-badge').classList.remove('hidden');
+                } else {
+                    // 2nd time wrong -> 0 points for this question
+                    speakTTS("Keep trying!");
+                    feedbackBox.className = 'w-full p-3 rounded-xl mb-6 bg-slate-100 text-slate-600 text-xs font-bold border border-slate-200 transition';
+                    feedbackBox.innerHTML = `残念！正解は "${q.en}" でした。次の問題に進みます。`;
+
+                    setTimeout(() => {
+                        currentQuizIndex++;
+                        loadQuizQuestion();
+                    }, 2200);
+                }
+            }
+        }
+
+        function calculateWordMatchRatio(target, user) {
+            const tWords = target.split(' ');
+            const uWords = user.split(' ');
+            let matches = 0;
+            tWords.forEach(w => {
+                if (uWords.includes(w)) matches++;
+            });
+            return matches / tWords.length;
+        }
+
+        // Fallback simulation for test environment
+        function simulateCorrect() {
+            verifyPronunciation(currentQuizList[currentQuizIndex].en);
+        }
+
+        // Text-to-Speech Synthesis
+        function speakTTS(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function playNativeAudio() {
+            const q = currentQuizList[currentQuizIndex];
+            speakTTS(q.en);
+        }
+
+        function finishQuiz() {
+            switchTab('result');
+            document.getElementById('result-score-val').innerText = currentScore;
+            
+            const commentEl = document.getElementById('result-comment');
+            if (currentScore === 30) {
+                commentEl.innerText = '満点達成！完璧なインバウンド対応力です！🌟';
+            } else if (currentScore >= 20) {
+                commentEl.innerText = '素晴らしい接客英語力です！この調子で頑張りましょう！';
+            } else if (currentScore >= 10) {
+                commentEl.innerText = 'よく頑張りました！フレーズを復習してさらにスコアアップ！';
+            } else {
+                commentEl.innerText = 'お疲れ様でした！繰り返し練習して発音をマスターしましょう！';
+            }
+        }
+
+        function confirmQuitQuiz() {
+            showCustomMessage('テストを中断してホームに戻りますか？', '確認', () => {
+                switchTab('home');
+            });
+        }
+
+        // Phrase Management & CRUD
+        function renderManagePhrases() {
+            const filterCat = document.getElementById('manage-category-filter').value;
+            const container = document.getElementById('manage-phrases-list');
+            container.innerHTML = '';
+
+            // Populate category filter dropdown
+            const categories = [...new Set(phrases.map(p => p.category))];
+            const filterSelect = document.getElementById('manage-category-filter');
+            const currentSelection = filterSelect.value;
+            
+            filterSelect.innerHTML = '<option value="all">すべて表示</option>';
+            categories.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat;
+                opt.innerText = cat;
+                if (cat === currentSelection) opt.selected = true;
+                filterSelect.appendChild(opt);
+            });
+
+            const filtered = filterCat === 'all' ? phrases : phrases.filter(p => p.category === filterCat);
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">該当するフレーズはありません。</p>';
+                return;
+            }
+
+            filtered.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'bg-slate-50 p-3 rounded-2xl border border-slate-200 flex flex-col space-y-1';
+                div.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <span class="bg-sky-100 text-deepBlue text-[10px] font-bold px-2 py-0.5 rounded-full">${p.category}</span>
+                        <div class="flex space-x-1">
+                            <button onclick="editPhrase('${p.id}')" class="text-slate-400 hover:text-deepBlue p-1 text-xs"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deletePhrase('${p.id}')" class="text-slate-400 hover:text-rose-500 p-1 text-xs"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <p class="text-xs font-bold text-slate-800 font-poppins">${p.en}</p>
+                    <p class="text-xs text-slate-500">${p.jp}</p>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function updateCategorySuggestions() {
+            const categories = [...new Set(phrases.map(p => p.category))];
+            const datalist = document.getElementById('category-suggestions');
+            datalist.innerHTML = '';
+            categories.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat;
+                datalist.appendChild(opt);
+            });
+        }
+
+        function openAddModal(id = null) {
+            document.getElementById('phrase-modal').classList.remove('hidden');
+            document.getElementById('phrase-form').reset();
+            document.getElementById('phrase-id').value = '';
+            document.getElementById('modal-title').innerText = '新規フレーズ登録';
+
+            if (id) {
+                const p = phrases.find(item => item.id === id);
+                if (p) {
+                    document.getElementById('modal-title').innerText = 'フレーズ編集';
+                    document.getElementById('phrase-id').value = p.id;
+                    document.getElementById('phrase-category').value = p.category;
+                    document.getElementById('phrase-en').value = p.en;
+                    document.getElementById('phrase-jp').value = p.jp;
+                }
+            }
+        }
+
+        function closeAddModal() {
+            document.getElementById('phrase-modal').classList.add('hidden');
+        }
+
+        function savePhrase(event) {
+            event.preventDefault();
+            const id = document.getElementById('phrase-id').value;
+            const category = document.getElementById('phrase-category').value.trim();
+            const en = document.getElementById('phrase-en').value.trim();
+            const jp = document.getElementById('phrase-jp').value.trim();
+
+            if (id) {
+                // Edit existing
+                const index = phrases.findIndex(p => p.id === id);
+                if (index !== -1) {
+                    phrases[index] = { id, category, en, jp };
+                }
+            } else {
+                // Add new
+                const newId = 'phrase-' + Date.now();
+                phrases.push({ id: newId, category, en, jp });
+            }
+
+            savePhrasesToStorage();
+            closeAddModal();
+            renderManagePhrases();
+            showCustomMessage('フレーズを保存しました！', '完了');
+        }
+
+        function editPhrase(id) {
+            openAddModal(id);
+        }
+
+        function deletePhrase(id) {
+            showCustomMessage('このフレーズを削除してもよろしいですか？', '削除確認', () => {
+                phrases = phrases.filter(p => p.id !== id);
+                savePhrasesToStorage();
+                renderManagePhrases();
+            });
+        }
+
+        // Custom Message Modal Helper
+        let messageModalCallback = null;
+        function showCustomMessage(text, title = 'お知らせ', callback = null) {
+            document.getElementById('message-title').innerText = title;
+            document.getElementById('message-text').innerText = text;
+            document.getElementById('message-modal').classList.remove('hidden');
+            messageModalCallback = callback;
+        }
+
+        function closeMessageBox() {
+            document.getElementById('message-modal').classList.add('hidden');
+            if (messageModalCallback) {
+                messageModalCallback();
+                messageModalCallback = null;
+            }
+        }
+    </script>
+</body>
+</html>
